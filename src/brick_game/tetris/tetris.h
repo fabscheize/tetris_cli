@@ -2,6 +2,7 @@
 #define BRICK_GAME_TETRIS_TETRIS_H_
 
 #include "../../gui/cli/cli_frontend.h"
+#include <locale.h>
 
 typedef enum {
   Start,

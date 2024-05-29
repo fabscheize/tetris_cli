@@ -19,7 +19,7 @@ TETRISOBJ := $(patsubst brick_game/tetris/%.c, build/%.o, $(TETRIS))
 CLIOBJ := $(patsubst gui/cli/%.c, build/%.o, $(CLI))
 
 
-all: tetris_cli
+all: clean tetris_cli
 
 tetris_cli:	cli_frontend.a $(TETRIS)
 	$(CC) $(CFLAGS) $^ -o tetris_cli -lncurses
@@ -52,7 +52,7 @@ leaks: $(PROJECT).a $(TESTS)
 	leaks -atExit -- ./test.out
 
 clean:
-	@rm -rf $(PROJECT).a ./tests/report ./build/* *.out *.gcda *.gcno *.info
+	@rm -rf cli_frontend.a ./tests/report ./build/* *.out *.gcda *.gcno *.info
 
 rebuild: clean all
 

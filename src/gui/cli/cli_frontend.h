@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include <ncurses.h>
-#include "defines.h"
+#include "cli_defines.h"
 // #include "objects.h"
 
 void print_overlay(void);
