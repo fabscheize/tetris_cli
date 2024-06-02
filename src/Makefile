@@ -21,14 +21,14 @@ CLIOBJ := $(patsubst gui/cli/%.c, build/%.o, $(CLI))
 
 all: clean tetris_cli
 
-tetris_cli:	cli_frontend.a $(TETRIS)
+tetris_cli:	build/tetris_backend.a $(CLI)
 	$(CC) $(CFLAGS) $^ -o tetris_cli -lncurses
 	./tetris_cli
 
-build/%.o: gui/cli/%.c
+build/%.o: brick_game/tetris/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-cli_frontend.a: $(CLIOBJ)
+build/tetris_backend.a: $(TETRISOBJ)
 	ar rcs $@ $^
 	ranlib $@
 

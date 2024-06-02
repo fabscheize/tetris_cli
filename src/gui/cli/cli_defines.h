@@ -19,14 +19,14 @@
 // "@")
 // #define BOARDS_BEGIN ((getmaxx(stdscr) + BOARD_W + INFO_BLOCK_W + 4) / 2)
 
-#define BOARD_X ((getmaxx(stdscr) - BOARD_W - INFO_BLOCK_W - 4) / 2)
-#define BOARD_Y ((getmaxy(stdscr) - BOARD_H - 2) / 2)
-// #define BOARD_X 2
-// #define BOARD_Y 2
+#define SCREEN_X ((getmaxx(stdscr) - BOARD_W - INFO_BLOCK_W - 4) / 2)
+#define SCREEN_Y ((getmaxy(stdscr) - BOARD_H - 2) / 2)
+#define BOARD_X 2
+#define BOARD_Y 1
 
-#define MVPRINTW(y, x, ...) mvprintw(BOARD_Y + (y), BOARD_X + (x), __VA_ARGS__)
-#define MVADDCH(y, x, c) mvaddch(BOARD_Y + (y), BOARD_X + (x), c)
-#define CLEAR_BACKPOS(y, x) mvaddch(BOARD_Y + (y), BOARD_X + (x), ' ')
+#define MVPRINTW(y, x, ...) mvprintw(SCREEN_Y + (y), SCREEN_X + (x), __VA_ARGS__)
+#define MVADDCH(y, x, c) mvaddch(SCREEN_Y + (y), SCREEN_X + (x), c)
+#define CLEAR_BACKPOS(y, x) mvaddch(SCREEN_Y + (y), SCREEN_X + (x), ' ')
 
 #define YOU_WON "tests/game_progress/you_won.txt"
 #define YOU_LOSE "tests/game_progress/you_lose.txt"
@@ -58,5 +58,7 @@
 
 #define ESCAPE 27
 #define ENTER_KEY 10
+
+#define SOLID_BLOCK (' ' | A_REVERSE)
 
 #endif  // BRICK_GAME_GUI_CLI_CLI_DEFINES_H_
