@@ -6,7 +6,6 @@
 #include "../../brick_game/tetris/tetris_backend.h"
 #include <locale.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <signal.h>
 
 

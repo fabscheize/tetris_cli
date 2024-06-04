@@ -19,26 +19,34 @@ user_action_t get_signal(int user_input) {
   return act;
 }
 
-// void movedown(player_pos *frog_pos) {
-//   if (frog_pos->y != BOARD_N) {
-//     CLEAR_BACKPOS(frog_pos->y, frog_pos->x);
-//     frog_pos->y += 2;
-//   }
-// }
+void moveup(figure_t *figure) { figure->y -= 1; }
 
-// void moveright(player_pos *frog_pos) {
-//   if (frog_pos->x != BOARD_M) {
-//     CLEAR_BACKPOS(frog_pos->y, frog_pos->x);
-//     frog_pos->x++;
-//   }
-// }
+void movedown(figure_t *figure) {
+  bool flag = TRUE;
 
-// void moveleft(player_pos *frog_pos) {
-//   if (frog_pos->x != 1) {
-//     CLEAR_BACKPOS(frog_pos->y, frog_pos->x);
-//     frog_pos->x--;
-//   }
-// }
+  for (int i = 0; i < 4; i++)
+    if (figure->shape[i][0] + figure->y == BOARD_H - 1) flag = FALSE;
+
+  if (flag) figure->y += 1;
+}
+
+void moveleft(figure_t *figure) {
+  bool flag = TRUE;
+
+  for (int i = 0; i < 4; i++)
+    if (figure->shape[i][1] + figure->x == 0) flag = FALSE;
+
+  if (flag) figure->x -= 1;
+}
+
+void moveright(figure_t *figure) {
+  bool flag = TRUE;
+
+  for (int i = 0; i < 4; i++)
+    if (figure->shape[i][1] + figure->x == BOARD_W - 1) flag = FALSE;
+
+  if (flag) figure->x += 1;
+}
 
 // void sigact(user_action_t sig, frog_state *state, game_stats_t *stats,
 //             board_t *map, player_pos *frog_pos) {

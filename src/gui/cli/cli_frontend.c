@@ -63,12 +63,53 @@ void print_stats(game_info_t *game) {
   MVPRINTW(5, BOARD_W + 12, "%d", game->score);
   MVPRINTW(8, BOARD_W + 12, "%d", game->level);
   MVPRINTW(11, BOARD_W + 12, "%d", game->lines);
-  print_figure(15, BOARD_W + 11, game->next);
+  print_figure(15, BOARD_W + 11, game->next, game->next_id);
   // MVADDCH(BOARD_Y + 19, BOARD_X + 9, ACS_BLOCK);
 }
 
-void print_figure(int y, int x, int (*figure)[2]) {
+void print_figure(int y, int x, int **figure, int id) {
+  // mvprintw(0, 0, "-- %d --", id);
+  attron(COLOR_PAIR(SHAPE_COLOR(id)));
   for (int i = 0; i < 4; i++) {
     MVADDCH(y + figure[i][0], x + figure[i][1], ACS_BLOCK);
+  }
+  attroff(COLOR_PAIR(SHAPE_COLOR(id)));
+}
+
+void print_big_figure(int y, int x, int **figure, int id) {
+  attron(COLOR_PAIR(SHAPE_COLOR(id)));
+  for (int i = 0; i < 4; i++) {
+    mvaddch((y + figure[i][0]) * 2, (x + figure[i][1]) * 2, ACS_BLOCK);
+    mvaddch((y + figure[i][0]) * 2 + 1, (x + figure[i][1]) * 2, ACS_BLOCK);
+    mvaddch((y + figure[i][0]) * 2, (x + figure[i][1]) * 2 + 1, ACS_BLOCK);
+    mvaddch((y + figure[i][0]) * 2 + 1, (x + figure[i][1]) * 2 + 1, ACS_BLOCK);
+  }
+  attroff(COLOR_PAIR(SHAPE_COLOR(id)));
+}
+
+void print_field(game_info_t *game) {
+  for (int i = 0; i < BOARD_H; i++) {
+    for (int j = 0; j < BOARD_W; j++) {
+      if (game->field[i][j]) {
+        attron(COLOR_PAIR(game->field[i][j]));
+        MVADDCH(BOARD_Y + i, BOARD_X + j, ACS_BLOCK);
+        attroff(COLOR_PAIR(game->field[i][j]));
+      }
+    }
+  }
+}
+
+void set_colors() {
+  if (has_colors()) {
+    start_color();
+    init_color(COLOR_ORANGE, 996, 566, 47);
+    init_pair(O_COLOR, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(I_COLOR, COLOR_CYAN, COLOR_BLACK);
+    init_pair(S_COLOR, COLOR_GREEN, COLOR_BLACK);
+    init_pair(Z_COLOR, COLOR_RED, COLOR_BLACK);
+    init_pair(T_COLOR, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(L_COLOR, COLOR_ORANGE, COLOR_BLACK);
+    init_pair(J_COLOR, COLOR_BLUE, COLOR_BLACK);
+    init_pair(NO_COLOR, COLOR_WHITE, COLOR_BLACK);
   }
 }
