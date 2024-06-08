@@ -2,7 +2,6 @@
 #define BRICK_GAME_TETRIS_TETRIS_OBJECTS_H_
 
 typedef struct figure_s {
-  int ***shapes_list;
   int **shape;
   int id;
   int x;
@@ -28,6 +27,7 @@ typedef enum states {
 } game_states_t;
 
 typedef struct game_info_s{
+  int ***shapes_list;
   int **field;
   int **next;
   int next_id;

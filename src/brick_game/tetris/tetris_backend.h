@@ -14,7 +14,7 @@ enum shapes { O = 0, I, S, Z, T, L, J };
 
 int load_high_score();
 
-game_info_t* create_game(figure_t *figure, int height, int width);
+game_info_t* create_game(int ***shapes, int id, int height, int width);
 void destroy_game(game_info_t *game);
 
 int ***init_figures();
@@ -36,5 +36,8 @@ int check_figure_collision(game_info_t *game, figure_t *figure);
 bool check_borders_collision(figure_t *figure);
 
 void pause_game(game_info_t *game);
+
+int **init_matrix(int height, int width);
+void free_matrix(int **matrix);
 
 #endif  // BRICK_GAME_TETRIS_TETRIS_BACKEND_H_

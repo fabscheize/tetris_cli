@@ -1,12 +1,12 @@
 #include "tetris_backend.h"
 
-game_info_t *create_game(figure_t *figure, int height, int width) {
+game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game_info_t *game = malloc(sizeof(game_info_t));
-  game->field = (int **)calloc(height, sizeof(int *));
-  game->field[0] = (int *)calloc(height * width, sizeof(int));
-  for (int i = 1; i < height; i++) game->field[i] = game->field[0] + i * width;
-  game->next = figure->shape;
-  game->next_id = figure->id;
+  game->shapes_list = shapes;
+  game->field = init_matrix(height, width);
+  game->next = init_matrix(DOTS, COORDS);
+  game->next_id = id;
+  copy_shape(game->shapes_list[game->next_id], game->next);
   game->score = 0;
   game->high_score = load_high_score();
   game->level = 1;
@@ -35,12 +35,8 @@ int load_high_score() {
 }
 
 void destroy_game(game_info_t *game) {
-  if (game->field) {
-    if (game->field[0]) {
-      free(game->field[0]);
-    }
-    free(game->field);
-  }
+  free_matrix(game->next);
+  free_matrix(game->field);
   if (game) free(game);
 }
 
@@ -84,9 +80,9 @@ void free_figures(int ***figures) {
 
 figure_t *create_figure(int ***shapes, int id, int y, int x) {
   figure_t *figure = malloc(sizeof(figure_t));
-  figure->shapes_list = shapes;
   figure->id = id;
-  figure->shape = figure->shapes_list[figure->id];
+  figure->shape = init_matrix(DOTS, COORDS);
+  copy_shape(shapes[figure->id], figure->shape);
   figure->y = y;
   figure->x = x;
 
@@ -94,17 +90,17 @@ figure_t *create_figure(int ***shapes, int id, int y, int x) {
 }
 
 void destroy_figure(figure_t *figure) {
+  free_matrix(figure->shape);
   if (figure) free(figure);
 }
 
 void drop_new_figure(game_info_t *game, figure_t *figure) {
   figure->id = game->next_id;
-  figure->shape = game->next;
+  copy_shape(game->next, figure->shape);
   figure->y = START_Y;
   figure->x = START_X;
   game->next_id = RANDOM_FIGURE;
-  game->next = figure->shapes_list[game->next_id];
-
+  copy_shape(game->shapes_list[game->next_id], game->next);
 }
 
 void plant_figure(game_info_t *game, figure_t *figure) {
@@ -158,7 +154,7 @@ void copy_shape(int **shape_1, int **shape_2) {
 
 void rotate_figure(figure_t *figure, game_info_t *game) {
   figure_t *temp =
-      create_figure(figure->shapes_list, figure->id, figure->y, figure->x);
+      create_figure(game->shapes_list, figure->id, figure->y, figure->x);
   copy_shape(figure->shape, temp->shape);
 
   for (int i = 0; i < DOTS; i++) {
@@ -174,19 +170,17 @@ void rotate_figure(figure_t *figure, game_info_t *game) {
         }
         break;
       case 1:
+
         if (temp->shape[i][Y] == -1 && temp->shape[i][X] == 1) {
           temp->shape[i][Y] = -1;
           temp->shape[i][X] = -1;
-        }
-        if (temp->shape[i][Y] == -1 && temp->shape[i][X] == -1) {
+        } else if (temp->shape[i][Y] == -1 && temp->shape[i][X] == -1) {
           temp->shape[i][Y] = 1;
           temp->shape[i][X] = -1;
-        }
-        if (temp->shape[i][Y] == 1 && temp->shape[i][X] == -1) {
+        } else if (temp->shape[i][Y] == 1 && temp->shape[i][X] == -1) {
           temp->shape[i][Y] = 1;
           temp->shape[i][X] = 1;
-        }
-        if (temp->shape[i][Y] == 1 && temp->shape[i][X] == 1) {
+        } else if (temp->shape[i][Y] == 1 && temp->shape[i][X] == 1) {
           temp->shape[i][Y] = -1;
           temp->shape[i][X] = 1;
         }
@@ -224,6 +218,21 @@ bool check_borders_collision(figure_t *figure) {
   return flag;
 }
 
-
-
 // void pause_game(game_info_t *game) {}
+
+int **init_matrix(int height, int width) {
+  int **matrix = (int **)calloc(height, sizeof(int *));
+  matrix[0] = (int *)calloc(height * width, sizeof(int));
+  for (int i = 1; i < height; i++) matrix[i] = matrix[0] + i * width;
+
+  return matrix;
+}
+
+void free_matrix(int **matrix) {
+  if (matrix) {
+    if (matrix[0]) {
+      free(matrix[0]);
+    }
+    free(matrix);
+  }
+}

@@ -15,10 +15,10 @@ void game_loop() {
   int signal = 0;
   int ***figures = init_figures();
 
+  game_info_t *new_game = create_game(figures, RANDOM_FIGURE, BOARD_H, BOARD_W);
   figure_t *current_figure =
       create_figure(figures, RANDOM_FIGURE, START_Y, START_X);
-  game_info_t *new_game = create_game(current_figure, BOARD_H, BOARD_W);
-  drop_new_figure(new_game, current_figure);
+
 
   while (new_game->state != OVER && new_game->state != QUIT) {
     sigact(get_signal(signal), new_game, current_figure);
