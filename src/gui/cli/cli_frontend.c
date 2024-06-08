@@ -113,3 +113,11 @@ void set_colors() {
     init_pair(NO_COLOR, COLOR_WHITE, COLOR_BLACK);
   }
 }
+
+void clear_overlay() {
+  for (int i = 0; i < BOARD_H + 2; i++) {
+    for (int j = 0; j < BOARD_W + INFO_BLOCK_W + 3; j++) {
+      MVADDCH(i, j, ' ');
+    }
+  }
+}

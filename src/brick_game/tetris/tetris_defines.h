@@ -1,13 +1,14 @@
 #ifndef BRICK_GAME_TETRIS_TETRIS_DEFINES_H_
 #define BRICK_GAME_TETRIS_TETRIS_DEFINES_H_
 
-#define WIN_INIT(time)    \
-  {                       \
-    initscr();            \
-    noecho();             \
-    curs_set(0);          \
-    keypad(stdscr, TRUE); \
-    timeout(time);        \
+#define WIN_INIT(time)      \
+  {                         \
+    initscr();              \
+    noecho();               \
+    curs_set(0);            \
+    keypad(stdscr, TRUE);   \
+    timeout(time);          \
+    signal(SIGWINCH, NULL); \
   }
 
 #define GET_USER_INPUT getch()
@@ -28,7 +29,7 @@
 
 #define START_X 5
 #define START_Y 0
-#define INITIAL_TIMEOUT 150
+#define TIMEOUT 5
 
 #define SUCCESS 0
 #define ERROR 1
@@ -41,6 +42,9 @@
 
 #define X 1
 #define Y 0
+#define SHAPES 7
+#define DOTS 4
+#define COORDS 2
 
 #define COLOR_ORANGE 8
 #define SHAPE_COLOR(id) (id + 1)

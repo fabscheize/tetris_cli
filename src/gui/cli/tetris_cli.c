@@ -1,15 +1,10 @@
 #include "tetris.h"
 
 int main() {
-  initscr();
-  signal(SIGWINCH, NULL);
-  setlocale(LC_ALL, "");
-  curs_set(0);
-  keypad(stdscr, TRUE);
-  noecho();
+  WIN_INIT(50);
   set_colors();
 
-  print_overlay();
+  srandom(time(NULL));
   game_loop();
 
   endwin();
@@ -17,38 +12,27 @@ int main() {
 }
 
 void game_loop() {
-  srandom(time(NULL));
-
+  int signal = 0;
   int ***figures = init_figures();
 
-  figure_t *current_figure = create_figure(figures, START_Y, START_X);
+  figure_t *current_figure =
+      create_figure(figures, RANDOM_FIGURE, START_Y, START_X);
   game_info_t *new_game = create_game(current_figure, BOARD_H, BOARD_W);
-  drop_new_figure(current_figure);
+  drop_new_figure(new_game, current_figure);
 
-  // bool break_flag = TRUE;
-  // int signal = 0;
-  // frog_state state = START;
-
-  print_stats(new_game);
-  plant_figure(new_game, current_figure);
-  print_field(new_game);
-
-
-
-  getch();
+  while (new_game->state != OVER && new_game->state != QUIT) {
+    sigact(get_signal(signal), new_game, current_figure);
+    clear_overlay();
+    print_overlay();
+    print_stats(new_game);
+    print_field(new_game);
+    print_figure(BOARD_Y + current_figure->y, BOARD_X + current_figure->x,
+                 current_figure->shape, current_figure->id);
+    signal = GET_USER_INPUT;
+  }
   destroy_game(new_game);
   destroy_figure(current_figure);
   free_figures(figures);
-
-  // while (break_flag) {
-  //   if (state == GAMEOVER || state == EXIT_STATE || state ==
-  //   FILE_ERROR_STATE)
-  //     break_flag = FALSE;
-
-  //   sigact(get_signal(signal), &state, &stats, &map, &frog);
-
-  //   if (state == MOVING || state == START) signal = GET_USER_INPUT;
-  // }
 
   // if (state == FILE_ERROR_STATE) {
   //   print_levelerror();

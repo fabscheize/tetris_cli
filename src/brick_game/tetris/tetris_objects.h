@@ -9,7 +9,7 @@ typedef struct figure_s {
   int y;
 } figure_t;
 
-typedef enum {
+typedef enum signals {
   START,
   PAUSE,
   TERMINATE,
@@ -20,6 +20,13 @@ typedef enum {
   ACTION,
 } user_action_t;
 
+typedef enum states {
+  PLAYING,
+  STOPPED,
+  QUIT,
+  OVER,
+} game_states_t;
+
 typedef struct game_info_s{
   int **field;
   int **next;
@@ -29,7 +36,8 @@ typedef struct game_info_s{
   int level;
   int lines;
   int speed;
-  int pause;
+  int state;
+  int ticks_left;
 } game_info_t;
 
 #endif  // BRICK_GAME_TETRIS_TETRIS_OBJECTS_H_

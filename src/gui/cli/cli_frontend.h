@@ -18,6 +18,8 @@ void print_game_pool(int top_y, int bottom_y, int left_x, int right_x);
 void print_field(game_info_t *game);
 void set_colors();
 
+void clear_overlay();
+
 void print_big_figure(int y, int x, int **figure, int id);
 
 #endif  // BRICK_GAME_GUI_CLI_CLI_FRONTEND_H_
