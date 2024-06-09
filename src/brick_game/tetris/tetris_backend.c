@@ -1,4 +1,4 @@
-#include "tetris_backend.h"
+#include "../../inc/tetris_backend.h"
 
 game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game_info_t *game = malloc(sizeof(game_info_t));

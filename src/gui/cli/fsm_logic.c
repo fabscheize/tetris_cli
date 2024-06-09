@@ -1,4 +1,4 @@
-#include "fsm_logic.h"
+#include "../../inc/fsm_logic.h"
 
 user_action_t get_signal(int user_input) {
   user_action_t act = START;

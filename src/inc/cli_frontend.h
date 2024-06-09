@@ -4,11 +4,12 @@
 #include <ncurses.h>
 #include <string.h>
 
-#include "../../brick_game/tetris/tetris_objects.h"
-#include "../../brick_game/tetris/tetris_defines.h"
+#include "tetris_objects.h"
+#include "tetris_defines.h"
 
 enum colors {O_COLOR = 1, I_COLOR, S_COLOR, Z_COLOR, T_COLOR, L_COLOR, J_COLOR, NO_COLOR};
 
+void print_welcome_window();
 void print_overlay(void);
 void print_levelerror(void);
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x);

@@ -20,6 +20,7 @@ typedef enum signals {
 } user_action_t;
 
 typedef enum states {
+  STARTED,
   PLAYING,
   STOPPED,
   QUIT,
@@ -36,7 +37,7 @@ typedef struct game_info_s{
   int level;
   int lines;
   int speed;
-  int state;
+  game_states_t state;
   int ticks_left;
 } game_info_t;
 

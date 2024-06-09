@@ -52,7 +52,7 @@ leaks: $(PROJECT).a $(TESTS)
 	leaks -atExit -- ./test.out
 
 clean:
-	@rm -rf cli_frontend.a ./tests/report ./build/* *.out *.gcda *.gcno *.info
+	@rm -rf cli_frontend.a tetris_cli save ./tests/report ./build/* *.out *.gcda *.gcno *.info
 
 rebuild: clean all
 

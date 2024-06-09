@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 
+#include "cli_frontend.h"
 #include "tetris_backend.h"
 #include "tetris_defines.h"
 #include "tetris_objects.h"

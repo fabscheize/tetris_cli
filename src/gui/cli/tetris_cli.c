@@ -1,4 +1,4 @@
-#include "tetris.h"
+#include "../../inc/tetris.h"
 
 int main() {
   WIN_INIT(10);

@@ -1,6 +1,11 @@
-#include "cli_frontend.h"
+#include "../../inc/cli_frontend.h"
 
-// tetrs
+void print_welcome_window() {
+  print_rectangle(0, 10, 0, 26);
+
+  MVPRINTW(9, 2, "Press any key to start");
+}
+
 void print_overlay(void) {
   print_rectangle(0, BOARD_H + 2, 0, BOARD_W + 3);
   print_rectangle(0, BOARD_H + 2, BOARD_W + 4, BOARD_W + INFO_BLOCK_W + 3);
