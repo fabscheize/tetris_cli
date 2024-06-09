@@ -66,8 +66,7 @@ void handle_collision(game_info_t *game, figure_t *figure) {
   if (check_borders_collision(figure) || check_figure_collision(game, figure)) {
     moveup(figure);
     plant_figure(game, figure);
-    int full_lines = check_full_lines(game);
-    game->score += erase_lines(game, full_lines);
+    game->score += erase_lines(game);
     drop_new_figure(game, figure);
     if (check_figure_collision(game, figure)) {
       game->state = OVER;

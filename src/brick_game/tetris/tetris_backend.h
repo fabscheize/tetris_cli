@@ -27,8 +27,9 @@ void copy_shape(int **shape_1, int **shape_2);
 void drop_new_figure(game_info_t *game, figure_t *figure);
 void plant_figure(game_info_t *game, figure_t *figure);
 
-int check_full_lines(game_info_t *game);
-int erase_lines(game_info_t *game, int full_lines);
+int is_full_line(game_info_t *game, int line);
+void drop_lines(game_info_t *game, int line);
+int erase_lines(game_info_t *game);
 
 void rotate_figure(figure_t *figure, game_info_t *game);
 

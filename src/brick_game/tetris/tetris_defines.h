@@ -29,7 +29,7 @@
 
 #define START_X 5
 #define START_Y 0
-#define TIMEOUT 5
+#define TIMEOUT 50
 
 #define SUCCESS 0
 #define ERROR 1

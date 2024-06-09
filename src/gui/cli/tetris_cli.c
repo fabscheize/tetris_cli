@@ -1,7 +1,7 @@
 #include "tetris.h"
 
 int main() {
-  WIN_INIT(50);
+  WIN_INIT(10);
   set_colors();
 
   srandom(time(NULL));

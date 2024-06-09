@@ -110,32 +110,37 @@ void plant_figure(game_info_t *game, figure_t *figure) {
   }
 }
 
-int check_full_lines(game_info_t *game) {
-  int line = 1;
-  int full_lines = 0;
+int is_full_line(game_info_t *game, int line) {
+  int flag = 1;
 
-  do {
-    for (int i = 0; i < BOARD_W && line != 0; i++)
-      line = game->field[BOARD_H - 1 - full_lines][i];
-    if (line) full_lines++;
-  } while (line != 0);
+  for (int j = 0; j < BOARD_W && flag != 0; j++) flag = game->field[line][j];
 
-  return full_lines;
+  return flag;
 }
 
-int erase_lines(game_info_t *game, int full_lines) {
-  for (int i = BOARD_H - full_lines - 1; i >= 0; i--) {
+void drop_lines(game_info_t *game, int line) {
+  for (int i = line; i > 0; i--) {
     for (int j = 0; j < BOARD_W; j++) {
-      game->field[i + full_lines][j] = game->field[i][j];
-    }
-  }
-  for (int i = 0; i < full_lines; i++) {
-    for (int j = 0; j < BOARD_W; j++) {
-      game->field[i][j] = 0;
+      game->field[i][j] = game->field[i - 1][j];
     }
   }
 
+  for (int j = 0; j < BOARD_W; j++) {
+    game->field[0][j] = 0;
+  }
+}
+
+int erase_lines(game_info_t *game) {
+  int full_lines = 0;
   int ret = 0;
+
+  for (int i = 0; i < BOARD_H; i++) {
+    if (is_full_line(game, i)) {
+      drop_lines(game, i);
+      full_lines++;
+    }
+  }
+
   if (full_lines == 1) ret = 100;
   if (full_lines == 2) ret = 300;
   if (full_lines == 3) ret = 700;
@@ -170,7 +175,6 @@ void rotate_figure(figure_t *figure, game_info_t *game) {
         }
         break;
       case 1:
-
         if (temp->shape[i][Y] == -1 && temp->shape[i][X] == 1) {
           temp->shape[i][Y] = -1;
           temp->shape[i][X] = -1;
