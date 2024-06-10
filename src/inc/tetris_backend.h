@@ -1,20 +1,22 @@
-#ifndef BRICK_GAME_TETRIS_TETRIS_BACKEND_H_
-#define BRICK_GAME_TETRIS_TETRIS_BACKEND_H_
+#ifndef TETRIS_BACKEND_H_
+#define TETRIS_BACKEND_H_
 
+#include <math.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
-#include <math.h>
 
-#include "tetris_objects.h"
 #include "tetris_defines.h"
+#include "tetris_objects.h"
 
 enum shapes { O = 0, I, S, Z, T, L, J };
 
-int load_high_score();
+int load_high_score(const char *filename);
+int save_high_score(const char *filename, game_info_t *game);
 
-game_info_t* create_game(int ***shapes, int id, int height, int width);
+game_info_t *create_game(int ***shapes, int id, int height, int width);
 void destroy_game(game_info_t *game);
 
 int ***init_figures();
@@ -25,6 +27,7 @@ void destroy_figure(figure_t *figure);
 void copy_shape(int **shape_1, int **shape_2);
 
 void drop_new_figure(game_info_t *game, figure_t *figure);
+void restart_game(game_info_t *game);
 void plant_figure(game_info_t *game, figure_t *figure);
 
 int is_full_line(game_info_t *game, int line);
@@ -36,9 +39,9 @@ void rotate_figure(figure_t *figure, game_info_t *game);
 int check_figure_collision(game_info_t *game, figure_t *figure);
 bool check_borders_collision(figure_t *figure);
 
-void pause_game(game_info_t *game);
-
 int **init_matrix(int height, int width);
 void free_matrix(int **matrix);
 
-#endif  // BRICK_GAME_TETRIS_TETRIS_BACKEND_H_
+void update_stats(game_info_t *game, int full_lines);
+
+#endif  // TETRIS_BACKEND_H_

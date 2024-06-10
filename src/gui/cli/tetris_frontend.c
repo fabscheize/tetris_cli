@@ -1,9 +1,87 @@
-#include "../../inc/cli_frontend.h"
+#include "../../inc/tetris_frontend.h"
 
 void print_welcome_window() {
-  print_rectangle(0, 10, 0, 26);
+  int tetris_logo[LOGO_H][LOGO_W] = {
+      {4, 4, 4, 0, 6, 6, 6, 0, 1, 1, 1, 0, 3, 3, 3, 0, 0, 2, 0, 5, 5, 5},
+      {0, 4, 0, 0, 6, 0, 0, 0, 0, 1, 0, 0, 3, 0, 3, 0, 0, 2, 0, 5, 0, 0},
+      {0, 4, 0, 0, 6, 6, 6, 0, 0, 1, 0, 0, 3, 3, 0, 0, 0, 2, 0, 5, 5, 5},
+      {0, 4, 0, 0, 6, 0, 0, 0, 0, 1, 0, 0, 3, 0, 3, 0, 0, 2, 0, 0, 0, 5},
+      {0, 4, 0, 0, 6, 6, 6, 0, 0, 1, 0, 0, 3, 0, 0, 3, 0, 2, 0, 5, 5, 5}};
 
-  MVPRINTW(9, 2, "Press any key to start");
+  print_rectangle(0, 19, 0, 27);
+
+  for (int i = 0; i < LOGO_H; i++) {
+    for (int j = 0; j < LOGO_W; j++) {
+      if (tetris_logo[i][j]) {
+        attron(COLOR_PAIR(tetris_logo[i][j]));
+        MVADDCH(i + 2, j + 3, SOLID_BLOCK);
+        attroff(COLOR_PAIR(tetris_logo[i][j]));
+      }
+    }
+  }
+
+  MVPRINTW(9, 3, "Press [Enter] to start");
+  attron(A_BOLD);
+  MVPRINTW(12, 3, "Controls:");
+  attroff(A_BOLD);
+  MVPRINTW(14, 3, "[Arrows]  -  movement");
+  MVPRINTW(15, 3, "[Space]   -  rotation");
+  MVPRINTW(16, 3, "[Escape]  -  pause");
+  MVPRINTW(17, 3, "[Q]       -  quit game");
+}
+
+void print_pause_window() {
+  print_rectangle(4, 10, -1, 28);
+
+  for (int i = 5; i < 10; i++) {
+    for (int j = 0; j < 28; j++) {
+      MVADDCH(i, j, ' ');
+    }
+  }
+
+  attron(A_BOLD);
+  MVPRINTW(6, 3, "PAUSE");
+  attroff(A_BOLD);
+  MVPRINTW(8, 3, "Press [Enter] to resume");
+}
+
+void print_quit_window() {
+  print_rectangle(4, 11, -1, 28);
+
+  attron(A_BOLD);
+  MVPRINTW(6, 3, "Are you sure");
+  MVPRINTW(7, 3, "you want to quit?");
+  attroff(A_BOLD);
+  MVPRINTW(9, 3, "Yes(Y)     No(N)");
+}
+
+void print_gameover_window() {
+  int game_over[OVER_H][OVER_W] = {
+      {6, 6, 6, 6, 0, 0, 6, 6, 0, 0, 6, 0, 0, 0, 6, 0, 6, 6, 6},
+      {6, 0, 0, 0, 0, 6, 0, 0, 6, 0, 6, 6, 0, 6, 6, 0, 6, 0, 0},
+      {6, 0, 6, 6, 0, 6, 0, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 6, 6},
+      {6, 0, 0, 6, 0, 6, 6, 6, 6, 0, 6, 0, 0, 0, 6, 0, 6, 0, 0},
+      {6, 6, 6, 6, 0, 6, 0, 0, 6, 0, 6, 0, 0, 0, 6, 0, 6, 6, 6},
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {4, 4, 4, 4, 0, 4, 0, 0, 0, 4, 0, 4, 4, 4, 0, 4, 4, 4, 0},
+      {4, 0, 0, 4, 0, 4, 0, 0, 0, 4, 0, 4, 0, 0, 0, 4, 0, 4, 0},
+      {4, 0, 0, 4, 0, 4, 0, 0, 0, 4, 0, 4, 4, 4, 0, 4, 4, 0, 0},
+      {4, 0, 0, 4, 0, 0, 4, 0, 4, 0, 0, 4, 0, 0, 0, 4, 0, 4, 0},
+      {4, 4, 4, 4, 0, 0, 0, 4, 0, 0, 0, 4, 4, 4, 0, 4, 0, 0, 4}};
+
+  print_rectangle(2, 18, -1, 28);
+
+  for (int i = 0; i < OVER_H; i++) {
+    for (int j = 0; j < OVER_W; j++) {
+      if (game_over[i][j]) {
+        attron(COLOR_PAIR(game_over[i][j]));
+        MVADDCH(i + 4, j + 5, SOLID_BLOCK);
+        attroff(COLOR_PAIR(game_over[i][j]));
+      }
+    }
+  }
+
+  MVPRINTW(16, 3, "Press [Enter] to retry");
 }
 
 void print_overlay(void) {
@@ -53,6 +131,12 @@ void print_rectangle(int top_y, int bottom_y, int left_x, int right_x) {
   i = left_x + 1;
   for (; i < right_x; i++) MVADDCH(bottom_y, i, ACS_HLINE);
   MVADDCH(bottom_y, i, ACS_LRCORNER);
+
+  for (int i = top_y + 1; i < bottom_y; i++) {
+    for (int j = left_x + 1; j < right_x; j++) {
+      MVADDCH(i, j, ' ');
+    }
+  }
 }
 
 void print_game_pool(int top_y, int bottom_y, int left_x, int right_x) {
@@ -107,8 +191,10 @@ void print_field(game_info_t *game) {
 void set_colors() {
   if (has_colors()) {
     start_color();
+    // init_color(COLOR_ORANGE, 925, 453, 183);
     init_color(COLOR_ORANGE, 996, 566, 47);
-    init_pair(O_COLOR, COLOR_YELLOW, COLOR_BLACK);
+    init_color(COLOR_LIGHT_YELLOW, 980, 902, 312);
+    init_pair(O_COLOR, COLOR_LIGHT_YELLOW, COLOR_BLACK);
     init_pair(I_COLOR, COLOR_CYAN, COLOR_BLACK);
     init_pair(S_COLOR, COLOR_GREEN, COLOR_BLACK);
     init_pair(Z_COLOR, COLOR_RED, COLOR_BLACK);
@@ -121,7 +207,7 @@ void set_colors() {
 
 void clear_overlay() {
   for (int i = 0; i < BOARD_H + 2; i++) {
-    for (int j = 0; j < BOARD_W + INFO_BLOCK_W + 3; j++) {
+    for (int j = -1; j < BOARD_W + INFO_BLOCK_W + 5; j++) {
       MVADDCH(i, j, ' ');
     }
   }

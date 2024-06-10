@@ -8,18 +8,17 @@ game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game->next_id = id;
   copy_shape(game->shapes_list[game->next_id], game->next);
   game->score = 0;
-  game->high_score = load_high_score();
+  game->high_score = load_high_score(SAVE_FILE);
   game->level = 1;
   game->lines = 0;
-  game->speed = 1;
-  game->state = PLAYING;
-  game->ticks_left = TIMEOUT;
+  game->speed = INITIAL_TIMEOUT;
+  game->ticks_left = game->speed;
+  game->state = STARTED;
 
   return game;
 }
 
-int load_high_score() {
-  const char filename[] = "save";
+int load_high_score(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
     file = fopen(filename, "w");
@@ -32,6 +31,15 @@ int load_high_score() {
   fscanf(file, "%d", &score);
   fclose(file);
   return score;
+}
+
+int save_high_score(const char *filename, game_info_t *game) {
+  FILE *file = fopen(filename, "w");
+  if (file == NULL) return -1;
+  fprintf(file, "%d", game->high_score);
+  fclose(file);
+
+  return 0;
 }
 
 void destroy_game(game_info_t *game) {
@@ -103,6 +111,17 @@ void drop_new_figure(game_info_t *game, figure_t *figure) {
   copy_shape(game->shapes_list[game->next_id], game->next);
 }
 
+void restart_game(game_info_t *game) {
+  memset(game->field[0], 0, BOARD_H * BOARD_W * sizeof(int));
+  game->next_id = RANDOM_FIGURE;
+  copy_shape(game->shapes_list[game->next_id], game->next);
+  game->score = 0;
+  game->level = 1;
+  game->lines = 0;
+  game->speed = INITIAL_TIMEOUT;
+  game->ticks_left = game->speed;
+}
+
 void plant_figure(game_info_t *game, figure_t *figure) {
   for (int i = 0; i < DOTS; i++) {
     game->field[figure->y + figure->shape[i][Y]]
@@ -132,7 +151,6 @@ void drop_lines(game_info_t *game, int line) {
 
 int erase_lines(game_info_t *game) {
   int full_lines = 0;
-  int ret = 0;
 
   for (int i = 0; i < BOARD_H; i++) {
     if (is_full_line(game, i)) {
@@ -141,12 +159,7 @@ int erase_lines(game_info_t *game) {
     }
   }
 
-  if (full_lines == 1) ret = 100;
-  if (full_lines == 2) ret = 300;
-  if (full_lines == 3) ret = 700;
-  if (full_lines >= 4) ret = 1500;
-
-  return ret;
+  return full_lines;
 }
 
 void copy_shape(int **shape_1, int **shape_2) {
@@ -222,8 +235,6 @@ bool check_borders_collision(figure_t *figure) {
   return flag;
 }
 
-// void pause_game(game_info_t *game) {}
-
 int **init_matrix(int height, int width) {
   int **matrix = (int **)calloc(height, sizeof(int *));
   matrix[0] = (int *)calloc(height * width, sizeof(int));
@@ -238,5 +249,20 @@ void free_matrix(int **matrix) {
       free(matrix[0]);
     }
     free(matrix);
+  }
+}
+
+void update_stats(game_info_t *game, int full_lines) {
+  game->lines += full_lines;
+  if (full_lines == 1) game->score += 100;
+  if (full_lines == 2) game->score += 300;
+  if (full_lines == 3) game->score += 700;
+  if (full_lines >= 4) game->score += 1500;
+
+  if (game->score > game->high_score) game->high_score = game->score;
+
+  if (game->level < 10) {
+    game->level = 1 + game->score / 600;
+    game->speed = INITIAL_TIMEOUT - 1000 * game->level;
   }
 }

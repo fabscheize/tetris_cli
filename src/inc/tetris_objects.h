@@ -1,5 +1,5 @@
-#ifndef BRICK_GAME_TETRIS_TETRIS_OBJECTS_H_
-#define BRICK_GAME_TETRIS_TETRIS_OBJECTS_H_
+#ifndef TETRIS_OBJECTS_H_
+#define TETRIS_OBJECTS_H_
 
 typedef struct figure_s {
   int **shape;
@@ -9,25 +9,29 @@ typedef struct figure_s {
 } figure_t;
 
 typedef enum signals {
+  NOTHING,
   START,
   PAUSE,
-  TERMINATE,
+  QUIT,
   LEFT,
   RIGHT,
   UP,
   DOWN,
   ACTION,
+  YES,
+  NO
 } user_action_t;
 
 typedef enum states {
   STARTED,
   PLAYING,
+  PAUSED,
   STOPPED,
-  QUIT,
+  TERMINATED,
   OVER,
 } game_states_t;
 
-typedef struct game_info_s{
+typedef struct game_info_s {
   int ***shapes_list;
   int **field;
   int **next;
@@ -37,8 +41,8 @@ typedef struct game_info_s{
   int level;
   int lines;
   int speed;
-  game_states_t state;
   int ticks_left;
+  game_states_t state;
 } game_info_t;
 
-#endif  // BRICK_GAME_TETRIS_TETRIS_OBJECTS_H_
+#endif  // TETRIS_OBJECTS_H_

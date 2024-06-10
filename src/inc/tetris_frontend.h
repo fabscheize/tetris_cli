@@ -1,15 +1,27 @@
-#ifndef BRICK_GAME_GUI_CLI_CLI_FRONTEND_H_
-#define BRICK_GAME_GUI_CLI_CLI_FRONTEND_H_
+#ifndef TETRIS_FRONTEND_H_
+#define TETRIS_FRONTEND_H_
 
 #include <ncurses.h>
 #include <string.h>
 
-#include "tetris_objects.h"
 #include "tetris_defines.h"
+#include "tetris_objects.h"
 
-enum colors {O_COLOR = 1, I_COLOR, S_COLOR, Z_COLOR, T_COLOR, L_COLOR, J_COLOR, NO_COLOR};
+enum colors {
+  O_COLOR = 1,
+  I_COLOR,
+  S_COLOR,
+  Z_COLOR,
+  T_COLOR,
+  L_COLOR,
+  J_COLOR,
+  NO_COLOR
+};
 
 void print_welcome_window();
+void print_pause_window();
+void print_quit_window();
+void print_gameover_window();
 void print_overlay(void);
 void print_levelerror(void);
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x);
@@ -23,4 +35,4 @@ void clear_overlay();
 
 void print_big_figure(int y, int x, int **figure, int id);
 
-#endif  // BRICK_GAME_GUI_CLI_CLI_FRONTEND_H_
+#endif  // TETRIS_FRONTEND_H_
