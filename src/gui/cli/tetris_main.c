@@ -1,26 +1,19 @@
-#include "../../inc/tetris_main.h"
+#include "tetris_main.h"
 
-int main() {
-  // WIN_INIT(0);
-  initscr();
-  noecho();
-  curs_set(0);
-  keypad(stdscr, TRUE);
-  signal(SIGWINCH, NULL);
-  set_escdelay(0);
-  cbreak();
+int main(void) {
+  WIN_INIT();
   nodelay(stdscr, TRUE);
   setlocale(LC_ALL, "");
   set_colors();
-
   srandom(time(NULL));
+
   game_loop();
 
   endwin();
   return 0;
 }
 
-void game_loop() {
+void game_loop(void) {
   int signal = 0;
   int ***figures = init_figures();
 

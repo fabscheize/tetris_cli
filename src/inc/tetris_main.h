@@ -6,6 +6,6 @@
 
 #include "tetris_fsm_logic.h"
 
-void game_loop();
+void game_loop(void);
 
 #endif  // TETRIS_MAIN_H_

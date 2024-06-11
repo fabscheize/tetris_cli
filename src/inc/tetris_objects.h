@@ -1,12 +1,25 @@
 #ifndef TETRIS_OBJECTS_H_
 #define TETRIS_OBJECTS_H_
 
+#include <time.h>
+
 typedef struct figure_s {
   int **shape;
   int id;
   int x;
   int y;
 } figure_t;
+
+enum colors {
+  O_COLOR = 1,
+  I_COLOR,
+  S_COLOR,
+  Z_COLOR,
+  T_COLOR,
+  L_COLOR,
+  J_COLOR,
+  NO_COLOR
+};
 
 typedef enum signals {
   NOTHING,
@@ -40,9 +53,9 @@ typedef struct game_info_s {
   int high_score;
   int level;
   int lines;
-  int speed;
-  int ticks_left;
+  long speed;
   game_states_t state;
+  struct timespec start;
 } game_info_t;
 
 #endif  // TETRIS_OBJECTS_H_

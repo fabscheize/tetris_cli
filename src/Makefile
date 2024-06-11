@@ -1,7 +1,7 @@
 PROJECT = brick_game
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c11
+CFLAGS = -I inc -std=c11 -Wall -Werror -Wextra -Wpedantic
 GCOVFLAGS = -fprofile-arcs -ftest-coverage
 OS = $(shell uname -s)
 

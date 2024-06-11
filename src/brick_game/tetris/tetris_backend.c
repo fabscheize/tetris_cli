@@ -1,4 +1,21 @@
-#include "../../inc/tetris_backend.h"
+#include "tetris_backend.h"
+
+int **init_matrix(int height, int width) {
+  int **matrix = (int **)calloc(height, sizeof(int *));
+  matrix[0] = (int *)calloc(height * width, sizeof(int));
+  for (int i = 1; i < height; i++) matrix[i] = matrix[0] + i * width;
+
+  return matrix;
+}
+
+void free_matrix(int **matrix) {
+  if (matrix) {
+    if (matrix[0]) {
+      free(matrix[0]);
+    }
+    free(matrix);
+  }
+}
 
 game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game_info_t *game = malloc(sizeof(game_info_t));
@@ -11,35 +28,10 @@ game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game->high_score = load_high_score(SAVE_FILE);
   game->level = 1;
   game->lines = 0;
-  game->speed = INITIAL_TIMEOUT;
-  game->ticks_left = game->speed;
+  game->speed = INITIAL_SPEED_NS;
   game->state = STARTED;
 
   return game;
-}
-
-int load_high_score(const char *filename) {
-  FILE *file = fopen(filename, "r");
-  if (file == NULL) {
-    file = fopen(filename, "w");
-    if (file == NULL) return -1;
-    fclose(file);
-    return 0;
-  }
-
-  int score = 0;
-  fscanf(file, "%d", &score);
-  fclose(file);
-  return score;
-}
-
-int save_high_score(const char *filename, game_info_t *game) {
-  FILE *file = fopen(filename, "w");
-  if (file == NULL) return -1;
-  fprintf(file, "%d", game->high_score);
-  fclose(file);
-
-  return 0;
 }
 
 void destroy_game(game_info_t *game) {
@@ -48,7 +40,17 @@ void destroy_game(game_info_t *game) {
   if (game) free(game);
 }
 
-int ***init_figures() {
+void restart_game(game_info_t *game) {
+  memset(game->field[0], 0, BOARD_H * BOARD_W * sizeof(int));
+  game->next_id = RANDOM_FIGURE;
+  copy_shape(game->shapes_list[game->next_id], game->next);
+  game->score = 0;
+  game->level = 1;
+  game->lines = 0;
+  game->speed = INITIAL_SPEED_NS;
+}
+
+int ***init_figures(void) {
   int shapes[][DOTS][COORDS] = {
       {{0, 0}, {1, 0}, {1, -1}, {0, -1}}, {{0, 0}, {0, 1}, {0, -1}, {0, -2}},
       {{0, 0}, {0, 1}, {1, 0}, {1, -1}},  {{0, 0}, {0, -1}, {1, 0}, {1, 1}},
@@ -111,57 +113,6 @@ void drop_new_figure(game_info_t *game, figure_t *figure) {
   copy_shape(game->shapes_list[game->next_id], game->next);
 }
 
-void restart_game(game_info_t *game) {
-  memset(game->field[0], 0, BOARD_H * BOARD_W * sizeof(int));
-  game->next_id = RANDOM_FIGURE;
-  copy_shape(game->shapes_list[game->next_id], game->next);
-  game->score = 0;
-  game->level = 1;
-  game->lines = 0;
-  game->speed = INITIAL_TIMEOUT;
-  game->ticks_left = game->speed;
-}
-
-void plant_figure(game_info_t *game, figure_t *figure) {
-  for (int i = 0; i < DOTS; i++) {
-    game->field[figure->y + figure->shape[i][Y]]
-               [figure->x + figure->shape[i][X]] = figure->id + 1;
-  }
-}
-
-int is_full_line(game_info_t *game, int line) {
-  int flag = 1;
-
-  for (int j = 0; j < BOARD_W && flag != 0; j++) flag = game->field[line][j];
-
-  return flag;
-}
-
-void drop_lines(game_info_t *game, int line) {
-  for (int i = line; i > 0; i--) {
-    for (int j = 0; j < BOARD_W; j++) {
-      game->field[i][j] = game->field[i - 1][j];
-    }
-  }
-
-  for (int j = 0; j < BOARD_W; j++) {
-    game->field[0][j] = 0;
-  }
-}
-
-int erase_lines(game_info_t *game) {
-  int full_lines = 0;
-
-  for (int i = 0; i < BOARD_H; i++) {
-    if (is_full_line(game, i)) {
-      drop_lines(game, i);
-      full_lines++;
-    }
-  }
-
-  return full_lines;
-}
-
 void copy_shape(int **shape_1, int **shape_2) {
   for (int i = 0; i < DOTS; i++) {
     for (int j = 0; j < COORDS; j++) {
@@ -211,6 +162,80 @@ void rotate_figure(figure_t *figure, game_info_t *game) {
   destroy_figure(temp);
 }
 
+void plant_figure(game_info_t *game, figure_t *figure) {
+  for (int i = 0; i < DOTS; i++) {
+    game->field[figure->y + figure->shape[i][Y]]
+               [figure->x + figure->shape[i][X]] = figure->id + 1;
+  }
+}
+
+void moveup(figure_t *figure) { figure->y -= 1; }
+
+void movedown(figure_t *figure) { figure->y += 1; }
+
+void moveleft(figure_t *figure) {
+  int flag = 1;
+
+  for (int i = 0; i < DOTS && flag == 1; i++)
+    if (figure->shape[i][X] + figure->x == 0) flag = 0;
+
+  if (flag) figure->x -= 1;
+}
+
+void moveright(figure_t *figure) {
+  int flag = 1;
+
+  for (int i = 0; i < DOTS && flag == 1; i++)
+    if (figure->shape[i][X] + figure->x == BOARD_W - 1) flag = 0;
+
+  if (flag) figure->x += 1;
+}
+
+void handle_collision(game_info_t *game, figure_t *figure) {
+  if (check_borders_collision(figure) || check_figure_collision(game, figure)) {
+    moveup(figure);
+    plant_figure(game, figure);
+    update_stats(game, erase_lines(game));
+    drop_new_figure(game, figure);
+    if (check_figure_collision(game, figure)) {
+      game->state = OVER;
+    }
+  }
+}
+
+int is_full_line(game_info_t *game, int line) {
+  int flag = 1;
+
+  for (int j = 0; j < BOARD_W && flag != 0; j++) flag = game->field[line][j];
+
+  return flag;
+}
+
+void drop_lines(game_info_t *game, int line) {
+  for (int i = line; i > 0; i--) {
+    for (int j = 0; j < BOARD_W; j++) {
+      game->field[i][j] = game->field[i - 1][j];
+    }
+  }
+
+  for (int j = 0; j < BOARD_W; j++) {
+    game->field[0][j] = 0;
+  }
+}
+
+int erase_lines(game_info_t *game) {
+  int full_lines = 0;
+
+  for (int i = 0; i < BOARD_H; i++) {
+    if (is_full_line(game, i)) {
+      drop_lines(game, i);
+      full_lines++;
+    }
+  }
+
+  return full_lines;
+}
+
 int check_figure_collision(game_info_t *game, figure_t *figure) {
   int flag = 0;
   for (int i = 0; i < DOTS && flag == 0; i++) {
@@ -221,35 +246,18 @@ int check_figure_collision(game_info_t *game, figure_t *figure) {
   return flag;
 }
 
-bool check_borders_collision(figure_t *figure) {
-  bool flag = FALSE;
-  for (int i = 0; i < DOTS && flag == FALSE; i++) {
+int check_borders_collision(figure_t *figure) {
+  int flag = 0;
+  for (int i = 0; i < DOTS && flag == 0; i++) {
     if (((figure->y + figure->shape[i][Y]) < 0) ||
         ((figure->y + figure->shape[i][Y]) >= BOARD_H))
-      flag = TRUE;
+      flag = 1;
     if (((figure->x + figure->shape[i][X]) < 0) ||
         ((figure->x + figure->shape[i][X]) >= BOARD_W))
-      flag = TRUE;
+      flag = 1;
   }
 
   return flag;
-}
-
-int **init_matrix(int height, int width) {
-  int **matrix = (int **)calloc(height, sizeof(int *));
-  matrix[0] = (int *)calloc(height * width, sizeof(int));
-  for (int i = 1; i < height; i++) matrix[i] = matrix[0] + i * width;
-
-  return matrix;
-}
-
-void free_matrix(int **matrix) {
-  if (matrix) {
-    if (matrix[0]) {
-      free(matrix[0]);
-    }
-    free(matrix);
-  }
 }
 
 void update_stats(game_info_t *game, int full_lines) {
@@ -263,6 +271,30 @@ void update_stats(game_info_t *game, int full_lines) {
 
   if (game->level < 10) {
     game->level = 1 + game->score / 600;
-    game->speed = INITIAL_TIMEOUT - 1000 * game->level;
+    game->speed = INITIAL_SPEED_NS - DELTA_SPEED_NS * (game->level - 1);
   }
+}
+
+int load_high_score(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    file = fopen(filename, "w");
+    if (file == NULL) return -1;
+    fclose(file);
+    return 0;
+  }
+
+  int score = 0;
+  fscanf(file, "%d", &score);
+  fclose(file);
+  return score;
+}
+
+int save_high_score(const char *filename, game_info_t *game) {
+  FILE *file = fopen(filename, "w");
+  if (file == NULL) return -1;
+  fprintf(file, "%d", game->high_score);
+  fclose(file);
+
+  return 0;
 }
