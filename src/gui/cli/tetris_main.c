@@ -25,7 +25,8 @@ void game_loop(void) {
     update_current_state(get_signal(signal), game, current_figure);
     signal = GET_USER_INPUT;
   }
-  save_high_score(SAVE_FILE, game);
+  
+  save_high_score(game);
   destroy_game(game);
   destroy_figure(current_figure);
   free_figures(figures);

@@ -97,7 +97,6 @@ user_action_t get_signal(int user_input) {
 void user_input(user_action_t action, game_info_t *game, figure_t *figure) {
   switch (action) {
     case NOTHING:
-      // game_tact(game, figure);
       break;
     case PAUSE:
       game->state = PAUSED;

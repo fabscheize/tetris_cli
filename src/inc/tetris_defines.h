@@ -55,6 +55,7 @@
 
 #define RANDOM_FIGURE (random() % 7)
 
-#define SAVE_FILE "./save.txt"
+#define SAVE_DIR "/Tetris"
+#define SAVE_FILE "/tetris.save"
 
 #endif  // TETRIS_DEFINES_H_

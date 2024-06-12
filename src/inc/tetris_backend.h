@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "tetris_defines.h"
 #include "tetris_objects.h"
@@ -45,7 +47,7 @@ int check_figure_collision(game_info_t *game, figure_t *figure);
 int check_borders_collision(figure_t *figure);
 
 void update_stats(game_info_t *game, int full_lines);
-int load_high_score(const char *filename);
-int save_high_score(const char *filename, game_info_t *game);
+int load_high_score(void);
+int save_high_score(game_info_t *game);
 
 #endif  // TETRIS_BACKEND_H_

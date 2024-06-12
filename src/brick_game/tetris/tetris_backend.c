@@ -25,7 +25,7 @@ game_info_t *create_game(int ***shapes, int id, int height, int width) {
   game->next_id = id;
   copy_shape(game->shapes_list[game->next_id], game->next);
   game->score = 0;
-  game->high_score = load_high_score(SAVE_FILE);
+  game->high_score = load_high_score();
   game->level = 1;
   game->lines = 0;
   game->speed = INITIAL_SPEED_NS;
@@ -275,10 +275,17 @@ void update_stats(game_info_t *game, int full_lines) {
   }
 }
 
-int load_high_score(const char *filename) {
-  FILE *file = fopen(filename, "r");
+int load_high_score(void) {
+  char *home_path = getenv("HOME");
+  char save_path[100] = "";
+  strcpy(save_path, home_path);
+  strcat(save_path, SAVE_DIR);
+  if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
+  strcat(save_path, SAVE_FILE);
+
+  FILE *file = fopen(save_path, "r");
   if (file == NULL) {
-    file = fopen(filename, "w");
+    file = fopen(save_path, "w");
     if (file == NULL) return -1;
     fclose(file);
     return 0;
@@ -290,8 +297,15 @@ int load_high_score(const char *filename) {
   return score;
 }
 
-int save_high_score(const char *filename, game_info_t *game) {
-  FILE *file = fopen(filename, "w");
+int save_high_score(game_info_t *game) {
+  char *home_path = getenv("HOME");
+  char save_path[100] = "";
+  strcpy(save_path, home_path);
+  strcat(save_path, SAVE_DIR);
+  if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
+  strcat(save_path, SAVE_FILE);
+
+  FILE *file = fopen(save_path, "w");
   if (file == NULL) return -1;
   fprintf(file, "%d", game->high_score);
   fclose(file);

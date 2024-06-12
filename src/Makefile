@@ -1,42 +1,49 @@
-PROJECT = brick_game
-
 CC = gcc
 CFLAGS = -I inc -std=c11 -Wall -Werror -Wextra -Wpedantic
 GCOVFLAGS = -fprofile-arcs -ftest-coverage
+INSTALL = install
 OS = $(shell uname -s)
-
 ifeq ($(OS), Darwin)
 CHECKFLAGS = -lcheck
 else
 CHECKFLAGS = -lcheck -lm -lpthread -lrt -lsubunit
 endif
+# USER = $(shell whoami)
+INSTALL_PATH = /usr/local/bin
+BIN = tetris
+
 
 TETRIS = $(wildcard brick_game/tetris/*.c)
 CLI = $(wildcard gui/cli/*.c)
 TESTS = $(wildcard tests/*.c)
 STYLEFILES = $(wildcard *.c $(PROJECT)/*.c tests/*.c)
 TETRISOBJ := $(patsubst brick_game/tetris/%.c, build/%.o, $(TETRIS))
-CLIOBJ := $(patsubst gui/cli/%.c, build/%.o, $(CLI))
 
 
-all: clean tetris_cli
+all: $(BIN)
 
-tetris_cli:	build/tetris_backend.a $(CLI)
-	$(CC) $(CFLAGS) $^ -o tetris_cli -lncurses
-	./tetris_cli
+install: $(BIN)
+	@$(INSTALL) $(BIN) $(INSTALL_PATH)
+	@echo "Installed in $(INSTALL_PATH)/$(BIN)"
 
-build/%.o: brick_game/tetris/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
+uninstall: $(BIN)
+	@if [ -f $(INSTALL_PATH)/$(BIN) ]; then \
+		rm $(INSTALL_PATH)/$(BIN); \
+		echo "Uninstalled successfully."; \
+	else \
+		echo "$(BIN) already uninstalled."; \
+	fi
 
-build/tetris_backend.a: $(TETRISOBJ)
-	ar rcs $@ $^
-	ranlib $@
+clean:
+	@rm -rf tetris tetris_backend.a ./tests/report ./build/* *.out *.gcda *.gcno *.info ~/Tetris/tetris.save
 
-test: $(PROJECT).a $(TESTS)
-	$(CC) $(CFLAGS) $(CHECKFLAGS) $^ -o test.out
+test: test.out
 	./test.out
 
-gcov_report: $(PROJECT).a $(SOURCES) $(TESTS)
+leaks: test.out
+	leaks -atExit -- ./test.out
+
+gcov_report: tetris_backend.a $(TESTS)
 	$(CC) $(CFLAGS) $(CHECKFLAGS) $(GCOVFLAGS) $^ -o test_gcov.out
 	./test_gcov.out
 	lcov -t "gcov_report" -o coverage.info --no-external -c -d .
@@ -47,13 +54,19 @@ gcov_report: $(PROJECT).a $(SOURCES) $(TESTS)
 style:
 	@clang-format -style=Google -n $(STYLEFILES)
 
-leaks: $(PROJECT).a $(TESTS)
-	$(CC) $(CFLAGS) $(CHECKFLAGS) $^ -o test.out
-	leaks -atExit -- ./test.out
-
-clean:
-	@rm -rf cli_frontend.a tetris_cli save ./tests/report ./build/* *.out *.gcda *.gcno *.info
-
 rebuild: clean all
 
-.PHONY: all tetris_cli cli_frontend.a test gcov_report style clean rebuild
+$(BIN):	tetris_backend.a $(CLI)
+	$(CC) $(CFLAGS) $^ -o $(BIN) -lncurses
+
+build/%.o: brick_game/tetris/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+tetris_backend.a: $(TETRISOBJ)
+	ar rcs $@ $^
+	ranlib $@
+
+test.out: tetris_backend.a $(TESTS)
+	$(CC) $(CFLAGS) $(CHECKFLAGS) $^ -o test.out
+
+.PHONY: all install uninstall clean test leaks gcov_report style rebuild
