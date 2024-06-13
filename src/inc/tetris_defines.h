@@ -39,6 +39,10 @@
 #define ESCAPE 27
 #define ENTER_KEY 10
 #define SPACE 32
+#define DOWN_KEY 0402
+#define UP_KEY 0403
+#define LEFT_KEY 0404
+#define RIGHT_KEY 0405
 
 #define X 1
 #define Y 0

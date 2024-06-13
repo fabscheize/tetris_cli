@@ -6,6 +6,8 @@
 #include "tetris_defines.h"
 #include "tetris_objects.h"
 
+void update_screen(game_info_t *game, figure_t *figure);
+
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x);
 void print_game_pool(int top_y, int bottom_y, int left_x, int right_x);
 

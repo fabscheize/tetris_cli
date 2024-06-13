@@ -1,5 +1,32 @@
 #include "tetris_frontend.h"
 
+void update_screen(game_info_t *game, figure_t *figure) {
+  switch (game->state) {
+    case STARTED:
+      print_welcome_window();
+      break;
+    case PLAYING:
+      clear_overlay();
+      print_overlay();
+      print_stats(game);
+      print_field(game);
+      print_figure(BOARD_Y + figure->y, BOARD_X + figure->x, figure->shape,
+                   figure->id);
+      break;
+    case STOPPED:
+      print_quit_window();
+      break;
+    case PAUSED:
+      print_pause_window();
+      break;
+    case OVER:
+      print_gameover_window();
+      break;
+    default:
+      break;
+  }
+}
+
 void print_rectangle(int top_y, int bottom_y, int left_x, int right_x) {
   MVADDCH(top_y, left_x, ACS_ULCORNER);
 

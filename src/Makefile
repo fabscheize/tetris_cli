@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -I inc -std=c11 -Wall -Werror -Wextra -Wpedantic
+CFLAGS = -I inc -std=c11 -Wall -Werror -Wextra
 GCOVFLAGS = -fprofile-arcs -ftest-coverage
 INSTALL = install
 OS = $(shell uname -s)
@@ -37,13 +37,19 @@ uninstall: $(BIN)
 clean:
 	@rm -rf tetris tetris_backend.a ./tests/report ./build/* *.out *.gcda *.gcno *.info ~/Tetris/tetris.save
 
+dvi: readme.texi
+	texi2dvi --pdf readme.texi -I . -o readme.dvi
+
+dist: clean
+	tar -czf BrickGame-1.0-1.tar.gz brick_game build gui inc tests Makefile
+
 test: test.out
 	./test.out
 
 leaks: test.out
 	leaks -atExit -- ./test.out
 
-gcov_report: tetris_backend.a $(TESTS)
+gcov_report: tetris_backend.a $(TESTS) $(TETRIS)
 	$(CC) $(CFLAGS) $(CHECKFLAGS) $(GCOVFLAGS) $^ -o test_gcov.out
 	./test_gcov.out
 	lcov -t "gcov_report" -o coverage.info --no-external -c -d .

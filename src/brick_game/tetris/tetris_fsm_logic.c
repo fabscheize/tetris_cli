@@ -1,50 +1,31 @@
 #include "tetris_fsm_logic.h"
 
+void play(game_info_t *game) {
+  game->state = PLAYING;
+  clock_gettime(CLOCK_MONOTONIC, &game->start);
+}
+
 void update_current_state(user_action_t action, game_info_t *game,
                           figure_t *figure) {
   switch (game->state) {
     case STARTED:
-      print_welcome_window();
-      if (action == START) {
-        game->state = PLAYING;
-        clock_gettime(CLOCK_MONOTONIC, &game->start);
-      }
+    case PAUSED:
+      if (action == START) play(game);
       if (action == QUIT) game->state = TERMINATED;
       break;
     case PLAYING:
       game_tact(game, figure);
       user_input(action, game, figure);
-      clear_overlay();
-      print_overlay();
-      print_stats(game);
-      print_field(game);
-      print_figure(BOARD_Y + figure->y, BOARD_X + figure->x, figure->shape,
-                   figure->id);
       break;
     case STOPPED:
-      print_quit_window();
-      if (action == NO) {
-        game->state = PLAYING;
-        clock_gettime(CLOCK_MONOTONIC, &game->start);
-      }
+      if (action == NO) play(game);
       if (action == YES) game->state = TERMINATED;
       break;
-    case PAUSED:
-      print_pause_window();
-      if (action == START) {
-        game->state = PLAYING;
-        clock_gettime(CLOCK_MONOTONIC, &game->start);
-      }
-      if (action == QUIT) game->state = TERMINATED;
-      break;
     case OVER:
-      print_gameover_window();
       if (action == START) {
-        restart_game(game);
-        drop_new_figure(game, figure);
-        clear_overlay();
-        game->state = PLAYING;
-        clock_gettime(CLOCK_MONOTONIC, &game->start);
+        restart_game(game, RANDOM_FIGURE);
+        drop_new_figure(game, figure, RANDOM_FIGURE);
+        play(game);
       }
       if (action == QUIT) game->state = TERMINATED;
       break;
@@ -63,16 +44,16 @@ user_action_t get_signal(int user_input) {
     case 'q':
       act = QUIT;
       break;
-    case KEY_UP:
+    case UP_KEY:
       /* no action */
       break;
-    case KEY_DOWN:
+    case DOWN_KEY:
       act = DOWN;
       break;
-    case KEY_LEFT:
+    case LEFT_KEY:
       act = LEFT;
       break;
-    case KEY_RIGHT:
+    case RIGHT_KEY:
       act = RIGHT;
       break;
     case ESCAPE:

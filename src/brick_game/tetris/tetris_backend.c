@@ -40,9 +40,9 @@ void destroy_game(game_info_t *game) {
   if (game) free(game);
 }
 
-void restart_game(game_info_t *game) {
+void restart_game(game_info_t *game, int id) {
   memset(game->field[0], 0, BOARD_H * BOARD_W * sizeof(int));
-  game->next_id = RANDOM_FIGURE;
+  game->next_id = id;
   copy_shape(game->shapes_list[game->next_id], game->next);
   game->score = 0;
   game->level = 1;
@@ -104,12 +104,12 @@ void destroy_figure(figure_t *figure) {
   if (figure) free(figure);
 }
 
-void drop_new_figure(game_info_t *game, figure_t *figure) {
+void drop_new_figure(game_info_t *game, figure_t *figure, int id) {
   figure->id = game->next_id;
   copy_shape(game->next, figure->shape);
   figure->y = START_Y;
   figure->x = START_X;
-  game->next_id = RANDOM_FIGURE;
+  game->next_id = id;
   copy_shape(game->shapes_list[game->next_id], game->next);
 }
 
@@ -196,7 +196,7 @@ void handle_collision(game_info_t *game, figure_t *figure) {
     moveup(figure);
     plant_figure(game, figure);
     update_stats(game, erase_lines(game));
-    drop_new_figure(game, figure);
+    drop_new_figure(game, figure, RANDOM_FIGURE);
     if (check_figure_collision(game, figure)) {
       game->state = OVER;
     }
@@ -276,12 +276,8 @@ void update_stats(game_info_t *game, int full_lines) {
 }
 
 int load_high_score(void) {
-  char *home_path = getenv("HOME");
   char save_path[100] = "";
-  strcpy(save_path, home_path);
-  strcat(save_path, SAVE_DIR);
-  if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
-  strcat(save_path, SAVE_FILE);
+  access_save_dir(save_path);
 
   FILE *file = fopen(save_path, "r");
   if (file == NULL) {
@@ -298,12 +294,8 @@ int load_high_score(void) {
 }
 
 int save_high_score(game_info_t *game) {
-  char *home_path = getenv("HOME");
   char save_path[100] = "";
-  strcpy(save_path, home_path);
-  strcat(save_path, SAVE_DIR);
-  if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
-  strcat(save_path, SAVE_FILE);
+  access_save_dir(save_path);
 
   FILE *file = fopen(save_path, "w");
   if (file == NULL) return -1;
@@ -311,4 +303,12 @@ int save_high_score(game_info_t *game) {
   fclose(file);
 
   return 0;
+}
+
+void access_save_dir(char *save_path) {
+  char *home_path = getenv("HOME");
+  strcpy(save_path, home_path);
+  strcat(save_path, SAVE_DIR);
+  if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
+  strcat(save_path, SAVE_FILE);
 }
