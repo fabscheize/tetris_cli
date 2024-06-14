@@ -24,7 +24,7 @@ LIB = libtetris.a
 TETRIS = $(wildcard brick_game/tetris/*.c)
 CLI = $(wildcard gui/cli/*.c)
 TESTS = $(wildcard tests/*.c)
-STYLEFILES = $(wildcard *.c $(PROJECT)/*.c tests/*.c)
+STYLEFILES = $(TETRIS) $(CLI) $(TESTS) ./inc/*
 TETRISOBJ := $(patsubst brick_game/tetris/%.c, build/%.o, $(TETRIS))
 
 
@@ -41,14 +41,14 @@ uninstall:
 	@echo "Uninstalled successfully."
 
 clean:
-	@$(RM) $(BIN) $(LIB) ./tests/report ./build/* *.out *.gcda *.gcno *.info *.aux *.cp* *.log *.toc *.pg* *.dvi ~/Tetris
+	@$(RM) $(BIN) $(LIB) ./tests/report ./build/* *.out *.gcda *.gcno *.info *.aux *.cp* *.log *.toc *.pg* *.dvi *.gz ~/Tetris
 
 dvi: readme.texi
 	texi2dvi --pdf readme.texi -I . -o readme.dvi
 	@mv *.aux *.cp* *.log *.toc *.pg *.pgs ./build
 
 dist: clean
-	tar -czf BrickGame-v1.0-1.tar.gz brick_game build gui inc tests Makefile readme.texi
+	tar -czf BrickGame-v1.0-1.tar.gz brick_game build gui inc tests Makefile readme.texi fsm.jpeg
 
 test: test.out
 	./test.out
