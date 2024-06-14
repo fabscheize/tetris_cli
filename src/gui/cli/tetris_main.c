@@ -5,7 +5,7 @@ int main(void) {
   nodelay(stdscr, TRUE);
   setlocale(LC_ALL, "");
   set_colors();
-  srandom(time(NULL));
+  srand(time(NULL));
 
   game_loop();
 
@@ -14,7 +14,7 @@ int main(void) {
 }
 
 void game_loop(void) {
-  int signal = 0;
+  int signal = RANDOM_FIGURE;
   int ***figures = init_figures();
 
   game_info_t *game = create_game(figures, RANDOM_FIGURE, BOARD_H, BOARD_W);

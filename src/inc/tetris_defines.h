@@ -57,7 +57,7 @@
 
 #define SOLID_BLOCK (' ' | A_REVERSE)
 
-#define RANDOM_FIGURE (random() % 7)
+#define RANDOM_FIGURE ((int)(7 * (rand() / (RAND_MAX + 1.0))))
 
 #define SAVE_DIR "/Tetris"
 #define SAVE_FILE "/tetris.save"

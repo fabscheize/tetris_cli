@@ -1,6 +1,9 @@
 #ifndef TETRIS_BACKEND_H_
 #define TETRIS_BACKEND_H_
 
+// #define _POSIX_C_SOURCE 200809L
+// #define _XOPEN_SOURCE 500
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
