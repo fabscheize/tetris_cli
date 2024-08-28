@@ -13,6 +13,7 @@ void print_game_pool(int top_y, int bottom_y, int left_x, int right_x);
 
 void print_stats(game_info_t *game);
 void print_figure(int y, int x, int **figure, int id);
+void print_shadow_figure(int y, int x, int **figure);
 void print_field(game_info_t *game);
 
 void print_overlay(void);

@@ -10,6 +10,8 @@ void update_screen(game_info_t *game, figure_t *figure) {
       print_overlay();
       print_stats(game);
       print_field(game);
+      print_shadow_figure(BOARD_Y + figure->shadow_y, BOARD_X + figure->x,
+                          figure->shape);
       print_figure(BOARD_Y + figure->y, BOARD_X + figure->x, figure->shape,
                    figure->id);
       break;
@@ -74,6 +76,14 @@ void print_figure(int y, int x, int **figure, int id) {
     MVADDCH(y + figure[i][0], x + figure[i][1], ACS_BLOCK);
   }
   attroff(COLOR_PAIR(SHAPE_COLOR(id)));
+}
+
+void print_shadow_figure(int y, int x, int **figure) {
+  attron(COLOR_PAIR(SHADOW_COLOR));
+  for (int i = 0; i < 4; i++) {
+    MVADDCH(y + figure[i][0], x + figure[i][1], ACS_BLOCK);
+  }
+  attroff(COLOR_PAIR(SHADOW_COLOR));
 }
 
 void print_field(game_info_t *game) {
@@ -197,6 +207,7 @@ void set_colors(void) {
     init_color(COLOR_ORANGE, 996, 566, 47);
     init_color(COLOR_LIGHT_YELLOW, 980, 902, 312);
     init_color(COLOR_LIGHT_BLUE, 144, 347, 593);
+    init_color(COLOR_GREY, 360, 360, 360);
     init_pair(O_COLOR, COLOR_LIGHT_YELLOW, COLOR_BLACK);
     init_pair(I_COLOR, COLOR_CYAN, COLOR_BLACK);
     init_pair(S_COLOR, COLOR_GREEN, COLOR_BLACK);
@@ -204,6 +215,7 @@ void set_colors(void) {
     init_pair(T_COLOR, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(L_COLOR, COLOR_ORANGE, COLOR_BLACK);
     init_pair(J_COLOR, COLOR_LIGHT_BLUE, COLOR_BLACK);
+    init_pair(SHADOW_COLOR, COLOR_GREY, COLOR_BLACK);
     init_pair(NO_COLOR, COLOR_WHITE, COLOR_BLACK);
   }
 }

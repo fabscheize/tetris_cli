@@ -8,6 +8,7 @@ typedef struct figure_s {
   int id;
   int x;
   int y;
+  int shadow_y;
 } figure_t;
 
 enum shapes { O = 0, I, S, Z, T, L, J };
@@ -20,6 +21,7 @@ enum colors {
   T_COLOR,
   L_COLOR,
   J_COLOR,
+  SHADOW_COLOR,
   NO_COLOR
 };
 

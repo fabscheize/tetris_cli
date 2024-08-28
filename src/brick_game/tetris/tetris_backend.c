@@ -95,6 +95,7 @@ figure_t *create_figure(int ***shapes, int id, int y, int x) {
   copy_shape(shapes[figure->id], figure->shape);
   figure->y = y;
   figure->x = x;
+  figure->shadow_y = figure->y;
 
   return figure;
 }
@@ -109,6 +110,7 @@ void drop_new_figure(game_info_t *game, figure_t *figure, int id) {
   copy_shape(game->next, figure->shape);
   figure->y = START_Y;
   figure->x = START_X;
+  figure->shadow_y = figure->y;
   game->next_id = id;
   copy_shape(game->shapes_list[game->next_id], game->next);
 }
@@ -311,4 +313,14 @@ void access_save_dir(char *save_path) {
   strcat(save_path, SAVE_DIR);
   if (access(save_path, F_OK) == -1) mkdir(save_path, 0777);
   strcat(save_path, SAVE_FILE);
+}
+
+void calculate_shadow(game_info_t* game, figure_t* figure) {
+  int current_y = figure->y;
+  while (!check_borders_collision(figure) && !check_figure_collision(game, figure))
+  {
+    movedown(figure);
+  }
+  figure->shadow_y = figure->y - 1;
+  figure->y = current_y;
 }

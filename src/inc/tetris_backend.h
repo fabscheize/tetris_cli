@@ -52,4 +52,6 @@ int load_high_score(void);
 int save_high_score(game_info_t *game);
 void access_save_dir(char *save_path);
 
+void calculate_shadow(game_info_t* game, figure_t* figure);
+
 #endif  // TETRIS_BACKEND_H_

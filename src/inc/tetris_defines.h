@@ -53,6 +53,7 @@
 #define COLOR_ORANGE 8
 #define COLOR_LIGHT_YELLOW 9
 #define COLOR_LIGHT_BLUE 10
+#define COLOR_GREY 11
 #define SHAPE_COLOR(id) (id + 1)
 
 #define SOLID_BLOCK (' ' | A_REVERSE)

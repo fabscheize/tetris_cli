@@ -16,6 +16,7 @@ void update_current_state(user_action_t action, game_info_t *game,
     case PLAYING:
       game_tact(game, figure);
       user_input(action, game, figure);
+      calculate_shadow(game, figure);
       break;
     case STOPPED:
       if (action == NO) play(game);
